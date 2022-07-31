@@ -92,7 +92,7 @@ export default function Dashboard(props) {
                                         </li>
                                     </ul>
                                 </div>
-                                {/* <Conversation /> */}
+                                <Conversation />
                             </div>
                         </div>
                     </div>
