@@ -1,15 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Authenticated from "@/Layouts/Authenticated";
 import { Head } from "@inertiajs/inertia-react";
 import Conversation from "./Conversation";
 const baseUrl = `http://livechat.test/chat/`;
 export default function Dashboard(props) {
     const [openConversation, setOpenConversation] = useState(false);
+    const [userTwo, setUserTwo] = useState({});
+    const [messages, setMessages] = useState({
+        conversationreplies: [],
+        user: {},
+        user_two: {},
+        id: 0,
+        userOne: 0,
+        userTwo: 0,
+        status: "",
+        created_at: "",
+        updated_at: "",
+    });
+
     const selectUserHandler = async (e) => {
         await axios.post(`${baseUrl}` + e, { id: e }).then((res) => {
-            const { conversation } = res.data;
+            const messages = { ...res.data.conversation };
+            setMessages(messages);
             setOpenConversation(true);
-            console.log(conversation);
         });
     };
     return (
@@ -92,7 +105,10 @@ export default function Dashboard(props) {
                                         </li>
                                     </ul>
                                 </div>
-                                <Conversation />
+                                <Conversation
+                                    conversation={messages}
+                                    auth={props.auth.user}
+                                />
                             </div>
                         </div>
                     </div>

@@ -27,10 +27,20 @@ class ConversationController extends Controller
             ->with(['conversationreplies', 'user'])
             ->where('user_one', $auth->id)
             ->where('user_two', $userId)
-            ->get();
+            ->first();
+
+        $userTwo = User::findOrFail($userId);
+        $conversations['user_two'] = $userTwo;
         return response()->json([
             'success' => true,
-            'conversation' => $conversations
+            'conversation' => $conversations,
+        ]);
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $request->validate([
+            'message' => 'required'
         ]);
     }
 }
