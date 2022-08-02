@@ -17,6 +17,6 @@ class Conversation extends Model
 
     public function ConversationReplies()
     {
-        return $this->hasMany(ConversationReply::class);
+        return $this->hasMany(ConversationReply::class, 'conversation_id', 'id');
     }
 }

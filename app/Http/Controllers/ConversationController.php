@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\ConversationReply;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,19 +22,31 @@ class ConversationController extends Controller
 
     public function conversation(Request $request)
     {
-        $userId = $request->id;
-        $auth = Auth::user();
+        $userTo = $request->userTo;
+        $userFrom = $request->userFrom;
+        // $conversations = ConversationReply::query()
+        //     ->with(['conversation', 'user'])
+        //     ->where('user_id', $userId)
+        //     ->get();
         $conversations = Conversation::query()
             ->with(['conversationreplies', 'user'])
-            ->where('user_one', $auth->id)
-            ->where('user_two', $userId)
+            ->where('user_one', $userFrom)
+            ->where('user_two', $userTo)
+            ->orderBy('created_at', 'DESC')
             ->first();
+        if ($conversations === NULL) {
+            $conversations = Conversation::query()
+                ->with(['conversationreplies', 'user'])
+                ->where('user_two', $userFrom)
+                ->where('user_one', $userTo)
+                ->orderBy('created_at', 'DESC')
+                ->first();
+        }
 
-        $userTwo = User::findOrFail($userId);
-        $conversations['user_two'] = $userTwo;
+
         return response()->json([
             'success' => true,
-            'conversation' => $conversations,
+            'conversation' => $conversations
         ]);
     }
 

@@ -4,8 +4,8 @@ import { Head } from "@inertiajs/inertia-react";
 import Conversation from "./Conversation";
 const baseUrl = `http://livechat.test/chat/`;
 export default function Dashboard(props) {
+    console.log(props);
     const [openConversation, setOpenConversation] = useState(false);
-    const [userTwo, setUserTwo] = useState({});
     const [messages, setMessages] = useState({
         conversationreplies: [],
         user: {},
@@ -19,30 +19,53 @@ export default function Dashboard(props) {
     });
 
     const selectUserHandler = async (e) => {
-        await axios.post(`${baseUrl}` + e, { id: e }).then((res) => {
-            const messages = { ...res.data.conversation };
-            setMessages(messages);
-            setOpenConversation(true);
-        });
+        await axios
+            .post(`${baseUrl}` + e, {
+                userTo: e,
+                userFrom: props.auth.user.id,
+            })
+            .then((res) => {
+                const messages = { ...res.data.conversation };
+                setMessages(messages);
+                setOpenConversation(true);
+            });
     };
     return (
         <Authenticated auth={props.auth} errors={props.errors}>
             <Head title="Dashboard" />
-
             <div className="py-12">
                 <div
                     className={`max-w-${
                         openConversation === false ? "lg" : "7xl"
                     } mx-auto sm:px-6 lg:px-8`}
                 >
+                    {/* <div className="max-w-lg mx-auto sm:px-6 lg:px-8"> */}
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
+                            <button
+                                type="button"
+                                onClick={() => setOpenConversation(false)}
+                                className={`${
+                                    openConversation === false ? "hidden" : ""
+                                } w-16 h-6 bg-slate-300 rounded-md mb-1`}
+                            >
+                                Back
+                            </button>
+                            {/* <div className="min-w-full border rounded lg:grid lg:grid-cols-3"> */}
                             <div
-                                className={`min-w-full border rounded lg:grid lg:grid-cols-${
-                                    openConversation === false ? "1" : "3"
+                                className={`min-w-full border rounded ${
+                                    openConversation === false
+                                        ? ""
+                                        : "lg:grid lg:grid-cols-1"
                                 }`}
                             >
-                                <div className="border-r border-gray-300 lg:col-span-1">
+                                <div
+                                    className={`${
+                                        openConversation === true
+                                            ? "hidden"
+                                            : ""
+                                    } border-r border-gray-300 lg:col-span-1`}
+                                >
                                     <div className="mx-3 my-3">
                                         <div className="relative text-gray-600">
                                             <span className="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -105,10 +128,18 @@ export default function Dashboard(props) {
                                         </li>
                                     </ul>
                                 </div>
-                                <Conversation
-                                    conversation={messages}
-                                    auth={props.auth.user}
-                                />
+                                <div
+                                    className={`${
+                                        openConversation === true
+                                            ? ""
+                                            : "hidden"
+                                    } lg:col-span-2 lg:block`}
+                                >
+                                    <Conversation
+                                        conversation={messages}
+                                        auth={props.auth.user}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
