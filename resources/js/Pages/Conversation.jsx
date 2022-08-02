@@ -1,10 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
-const baseUrl = `http://livechat.test/chat/`;
-export default function Conversation({ conversation, auth }) {
+const baseUrl = `http://livechat.test/chat/sentMessage`;
+export default function Conversation({ conversation, auth, user }) {
     const [message, setMessage] = useState("");
-    // console.log("conversation => ", conversation);
-    // console.log("user => ", auth);
 
     const inputHandle = (e) => {
         setMessage(e.target.value);
@@ -13,14 +11,15 @@ export default function Conversation({ conversation, auth }) {
     const submitHandle = async (e) => {
         e.preventDefault();
         await axios
-            .post(`${baseUrl}sentMessage`, {
+            .post(`${baseUrl}`, {
+                conversationId: conversation.id || null,
+                userTo: user.id,
+                userFrom: auth.id,
                 message,
-                auth,
-                uset_two: conversation.user_two,
             })
-            .then((res) => {
-                console.log(res);
-            });
+            .then((res) => {})
+            .catch((error) => {});
+        setMessage("");
     };
     return (
         <div className="w-full">
@@ -31,7 +30,7 @@ export default function Conversation({ conversation, auth }) {
                     alt="username"
                 />
                 <span className="block ml-2 font-bold text-gray-600">
-                    {conversation.user_two.name}
+                    {user.name}
                 </span>
                 <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
             </div>
@@ -106,6 +105,7 @@ export default function Conversation({ conversation, auth }) {
 
                     <input
                         onChange={inputHandle}
+                        value={message}
                         type="text"
                         placeholder="Message"
                         className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"

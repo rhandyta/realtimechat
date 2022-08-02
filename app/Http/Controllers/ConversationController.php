@@ -24,10 +24,7 @@ class ConversationController extends Controller
     {
         $userTo = $request->userTo;
         $userFrom = $request->userFrom;
-        // $conversations = ConversationReply::query()
-        //     ->with(['conversation', 'user'])
-        //     ->where('user_id', $userId)
-        //     ->get();
+        $user = User::findOrFail($userTo);
         $conversations = Conversation::query()
             ->with(['conversationreplies', 'user'])
             ->where('user_one', $userFrom)
@@ -43,17 +40,40 @@ class ConversationController extends Controller
                 ->first();
         }
 
-
         return response()->json([
             'success' => true,
+            'user' => $user,
             'conversation' => $conversations
         ]);
     }
 
     public function sendMessage(Request $request)
     {
-        $request->validate([
-            'message' => 'required'
+        $rules = $request->validate([
+            'userTo' => 'required',
+            'userFrom' => 'required',
+            'message' => 'required',
+        ]);
+        $conversationId = $request->conversationId;
+        if (!$rules) return response()->json(['success' => false, 'messages' => $rules]);
+        if ($conversationId === Null) {
+            $conversationCreated = Conversation::create([
+                'user_one' => $request->userFrom,
+                'user_two' => $request->userTo
+            ]);
+            $conversationId = $conversationCreated->id;
+        }
+        $conversationToReply = Conversation::find($conversationId);
+        $message = [
+            'user_id' => $request->userTo,
+            'conversation_id' => $conversationId,
+            'body' => $request->message
+        ];
+        $conversationToReply->ConversationReplies()->create($message);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Message has been sent",
         ]);
     }
 }

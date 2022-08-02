@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Authenticated from "@/Layouts/Authenticated";
 import { Head } from "@inertiajs/inertia-react";
 import Conversation from "./Conversation";
 const baseUrl = `http://livechat.test/chat/`;
 export default function Dashboard(props) {
-    console.log(props);
     const [openConversation, setOpenConversation] = useState(false);
+    const [user, setUser] = useState({});
     const [messages, setMessages] = useState({
         conversationreplies: [],
         user: {},
@@ -20,13 +20,14 @@ export default function Dashboard(props) {
 
     const selectUserHandler = async (e) => {
         await axios
-            .post(`${baseUrl}` + e, {
-                userTo: e,
-                userFrom: props.auth.user.id,
+            .get(`${baseUrl}` + e, {
+                params: { userTo: e, userFrom: props.auth.user.id },
             })
             .then((res) => {
                 const messages = { ...res.data.conversation };
+                const user = { ...res.data.user };
                 setMessages(messages);
+                setUser(user);
                 setOpenConversation(true);
             });
     };
@@ -138,6 +139,7 @@ export default function Dashboard(props) {
                                     <Conversation
                                         conversation={messages}
                                         auth={props.auth.user}
+                                        user={user}
                                     />
                                 </div>
                             </div>

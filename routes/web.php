@@ -34,8 +34,8 @@ Route::group([
     'middleware' => ['auth', 'verified']
 ], function () {
     Route::get('chat', [ConversationController::class, 'index'])->name('chat.index');
-    Route::post('chat/{id}', [ConversationController::class, 'conversation'])->name('chat.conversation');
-    Route::post('chat/sentMessage', [ConversationController::class, 'sendMessage'])->name('chat.conversation');
+    Route::get('chat/{id}', [ConversationController::class, 'conversation'])->name('chat.conversation');
+    Route::post('chat/sentMessage', [ConversationController::class, 'sendMessage'])->name('chat.sentMessage');
 });
 
 require __DIR__ . '/auth.php';
