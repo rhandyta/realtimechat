@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Message;
 use App\Models\Conversation;
 use App\Models\ConversationReply;
 use App\Models\User;
@@ -70,7 +71,7 @@ class ConversationController extends Controller
             'body' => $request->message
         ];
         $conversationToReply->ConversationReplies()->create($message);
-
+        Message::dispatch($message);
         return response()->json([
             'success' => true,
             'message' => "Message has been sent",

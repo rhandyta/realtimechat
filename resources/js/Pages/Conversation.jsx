@@ -7,18 +7,34 @@ export default function Conversation({ conversation, auth, user }) {
     const inputHandle = (e) => {
         setMessage(e.target.value);
     };
-
+    Echo.private(`chat.${conversation.id}`).listen("Message", (e) => {
+        console.log("berhasil listen");
+        console.log(e);
+    });
     const submitHandle = async (e) => {
         e.preventDefault();
-        await axios
-            .post(`${baseUrl}`, {
+        // await axios
+        //     .post(`${baseUrl}`, {
+        //         conversationId: conversation.id || null,
+        //         userTo: user.id,
+        //         userFrom: auth.id,
+        //         message,
+        //     })
+        //     .then((res) => {})
+        //     .catch((error) => {});
+        await axios({
+            method: "post",
+            url: `${baseUrl}`,
+            data: {
                 conversationId: conversation.id || null,
                 userTo: user.id,
                 userFrom: auth.id,
                 message,
-            })
-            .then((res) => {})
-            .catch((error) => {});
+            },
+            headers: {
+                "X-Socket-Id": window.Echo.socketId(),
+            },
+        });
         setMessage("");
     };
     return (
