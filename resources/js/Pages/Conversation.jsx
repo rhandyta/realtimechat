@@ -13,15 +13,6 @@ export default function Conversation({ conversation, auth, user }) {
     });
     const submitHandle = async (e) => {
         e.preventDefault();
-        // await axios
-        //     .post(`${baseUrl}`, {
-        //         conversationId: conversation.id || null,
-        //         userTo: user.id,
-        //         userFrom: auth.id,
-        //         message,
-        //     })
-        //     .then((res) => {})
-        //     .catch((error) => {});
         await axios({
             method: "post",
             url: `${baseUrl}`,

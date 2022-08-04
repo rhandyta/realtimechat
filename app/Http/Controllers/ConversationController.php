@@ -27,24 +27,27 @@ class ConversationController extends Controller
         $userFrom = $request->userFrom;
         $user = User::findOrFail($userTo);
         $conversations = Conversation::query()
-            ->with(['conversationreplies', 'user'])
             ->where('user_one', $userFrom)
             ->where('user_two', $userTo)
             ->orderBy('created_at', 'DESC')
             ->first();
+
         if ($conversations === NULL) {
             $conversations = Conversation::query()
-                ->with(['conversationreplies', 'user'])
                 ->where('user_two', $userFrom)
                 ->where('user_one', $userTo)
                 ->orderBy('created_at', 'DESC')
                 ->first();
         }
+        $conversationReplies = ConversationReply::query()
+            ->where('conversation_id', $conversations->id)
+            ->get();
 
         return response()->json([
             'success' => true,
             'user' => $user,
-            'conversation' => $conversations
+            'conversation' => $conversations,
+            'conversationReplies' => $conversationReplies
         ]);
     }
 
@@ -70,8 +73,8 @@ class ConversationController extends Controller
             'conversation_id' => $conversationId,
             'body' => $request->message
         ];
-        $conversationToReply->ConversationReplies()->create($message);
-        Message::dispatch($message);
+        $resultMessage = $conversationToReply->ConversationReplies()->create($message);
+        Message::dispatch($resultMessage);
         return response()->json([
             'success' => true,
             'message' => "Message has been sent",
