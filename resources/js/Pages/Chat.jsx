@@ -179,7 +179,9 @@ export default function Dashboard(props) {
                                                 ? "none"
                                                 : "",
                                     }}
-                                    className="hidden lg:col-span-2 lg:block"
+                                    className={`${
+                                        openMessages === false ? "hidden" : ""
+                                    }}} lg:col-span-2 lg:block`}
                                 >
                                     <div className="w-full">
                                         <div className="relative flex items-center p-3 border-b border-gray-300">
