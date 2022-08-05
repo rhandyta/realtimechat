@@ -83,11 +83,32 @@ export default function Dashboard(props) {
         <Authenticated auth={props.auth} errors={props.errors}>
             <Head title="Dashboard" />
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-lg mx-auto sm:px-6 lg:px-8">
+                    {/* <div className="max-w-7xl mx-auto sm:px-6 lg:px-8"> */}
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
-                            <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
-                                <div className="border-r border-gray-300 lg:col-span-1">
+                            <button
+                                onClick={() => setOpenMessages(false)}
+                                style={{
+                                    display:
+                                        openMessages === false ? "none" : "",
+                                }}
+                                className="w-16 h-6 bg-sky-700 text-slate-100 focus:text-slate-200 focus:bg-slate-600 font-semibold rounded text-md mb-1"
+                                type="button"
+                            >
+                                Back
+                            </button>
+                            <div className="min-w-full border rounded lg:grid lg:grid-cols-1">
+                                {/* <div className="min-w-full border rounded lg:grid lg:grid-cols-3"> */}
+                                <div
+                                    style={{
+                                        display:
+                                            openMessages === false
+                                                ? ""
+                                                : "none",
+                                    }}
+                                    className="border-r border-gray-300 lg:col-span-1"
+                                >
                                     <div className="mx-3 my-3">
                                         <div className="relative text-gray-600">
                                             <span className="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -112,7 +133,6 @@ export default function Dashboard(props) {
                                             />
                                         </div>
                                     </div>
-
                                     <ul className="overflow-auto h-[32rem]">
                                         <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">
                                             Chats
