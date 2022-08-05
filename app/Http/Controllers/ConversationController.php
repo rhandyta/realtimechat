@@ -31,13 +31,19 @@ class ConversationController extends Controller
             ->where('user_two', $userTo)
             ->orderBy('created_at', 'DESC')
             ->first();
-
-        if ($conversations === NULL) {
+        if ($conversations === null) {
             $conversations = Conversation::query()
                 ->where('user_two', $userFrom)
                 ->where('user_one', $userTo)
                 ->orderBy('created_at', 'DESC')
                 ->first();
+        }
+        if (empty($conversations)) {
+            $conversations = Conversation::create([
+                'user_one' => $userFrom,
+                'user_two' => $userTo,
+                'status' => 'delivery'
+            ]);
         }
         $conversationReplies = ConversationReply::query()
             ->where('conversation_id', $conversations->id)

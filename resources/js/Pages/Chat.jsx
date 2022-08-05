@@ -16,55 +16,69 @@ export default function Dashboard(props) {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
 
-    console.log(messages);
-    async function selectUserHandler(e) {
-        await axios
-            .get(`${baseUrl}` + e, {
-                params: { userTo: e, userFrom: props.auth.user.id },
-            })
-            .then((res) => {
-                setUser(res.data.user);
-                if (res.data.conversation === null) {
-                    setMessages([]);
+    const selectUserHandler = async (e) => {
+        try {
+            await axios
+                .get(`${baseUrl}` + e, {
+                    params: { userTo: e, userFrom: props.auth.user.id },
+                })
+                .then((res) => {
+                    setUser(res.data.user);
+                    if (res.data.conversation === null) {
+                        setMessages([]);
+                        setOpenMessages(true);
+                    }
+                    setConversation(res.data.conversation);
+                    setMessages(res.data.conversationReplies);
                     setOpenMessages(true);
-                }
-                setConversation(res.data.conversation);
-                setMessages(res.data.conversationReplies);
-                setOpenMessages(true);
-            });
-        ListenE();
-    }
+                    ListenE(res.data.conversation.id);
+                });
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const inputHandle = async (e) => {
-        setMessage(e.target.value);
+        try {
+            setMessage(e.target.value);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        await axios({
-            method: "post",
-            url: `${baseUrl}sentMessage`,
-            data: {
-                conversationId: conversation === null ? null : conversation.id,
-                userTo: user.id,
-                userFrom: props.auth.user.id,
-                message,
-            },
-            headers: {
-                "X-Socket-Id": window.Echo.socketId(),
-            },
-        });
-        setMessage("");
+        try {
+            e.preventDefault();
+            await axios({
+                method: "post",
+                url: `${baseUrl}sentMessage`,
+                data: {
+                    conversationId:
+                        conversation === null ? null : conversation.id,
+                    userTo: user.id,
+                    userFrom: props.auth.user.id,
+                    message,
+                },
+                headers: {
+                    "X-Socket-Id": window.Echo.socketId(),
+                },
+            });
+            setMessage("");
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const ListenE = async (e) => {
-        await Echo.private(
-            `chat.${conversation === null ? 0 : conversation.id}`
-        ).listen("Message", function (e) {
-            setMessages((messages) => [...messages, e.message]);
-            console.log("done =>", messages);
-        });
+        try {
+            await Echo.private(`chat.${e}`).listen("Message", function (e) {
+                setMessages((messages) => [...messages, e.message]);
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
+
     return (
         <Authenticated auth={props.auth} errors={props.errors}>
             <Head title="Dashboard" />
@@ -106,12 +120,14 @@ export default function Dashboard(props) {
                                         <li>
                                             {props.users.map((user, i) => (
                                                 <a
-                                                    onClick={selectUserHandler.bind(
-                                                        this,
-                                                        user.id
-                                                    )}
+                                                    onClick={() =>
+                                                        selectUserHandler(
+                                                            user.id
+                                                        )
+                                                    }
                                                     key={i}
-                                                    className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out bg-gray-100 border-b border-gray-300 cursor-pointer focus:outline-none"
+                                                    className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out bg-gray-100
+                                                    border-b border-gray-300 cursor-pointer focus:outline-none"
                                                 >
                                                     <img
                                                         className="object-cover w-10 h-10 rounded-full"
