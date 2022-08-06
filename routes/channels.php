@@ -16,4 +16,4 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('chat.{conversation_id}', function ($user, $conversation_id) {
     return (int) $user->id !== (int) $conversation_id;
 });
-Broadcast::routes();
+Broadcast::routes(['middleware' => ['auth']]);
