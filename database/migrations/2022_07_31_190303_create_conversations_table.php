@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_one')->constrained()->references('id')->on('users')->cascadeOnUpdate();
             $table->foreignId('user_two')->constrained()->references('id')->on('users')->cascadeOnUpdate();
-            $table->enum('status', ['delivery', 'read']);
+            $table->enum('status', ['delivery', 'read'])->default('delivery');
             $table->timestamps();
         });
     }

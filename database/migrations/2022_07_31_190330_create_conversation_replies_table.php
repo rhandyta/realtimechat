@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate();
             $table->foreignId('conversation_id')->constrained()->cascadeOnUpdate();
             $table->text('body');
-            $table->enum('status', ['delivery', 'read']);
+            $table->enum('status', ['delivery', 'read'])->default('delivery');
             $table->timestamps();
         });
     }
