@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Authenticated from "@/Layouts/Authenticated";
 import { Head } from "@inertiajs/inertia-react";
-const baseUrl = `http://${window.location.host}.test/chat/`;
+const baseUrl = `https://${window.location.host}.test/chat/`;
 export default function Dashboard(props) {
     const [openMessages, setOpenMessages] = useState(false);
     const [user, setUser] = useState({});
