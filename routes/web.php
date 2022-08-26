@@ -36,6 +36,7 @@ Route::group([
     Route::get('chat', [ConversationController::class, 'index'])->name('chat.index');
     Route::get('chat/{id}', [ConversationController::class, 'conversation'])->name('chat.conversation');
     Route::post('chat/sentMessage', [ConversationController::class, 'sendMessage'])->name('chat.sentMessage');
+    Route::get('chat/name/{name}', [ConversationController::class, 'search'])->name('search');
 });
 
 require __DIR__ . '/auth.php';

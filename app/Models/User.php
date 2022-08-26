@@ -42,6 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+
     public function Conversation()
     {
         return $this->hasMany(Conversation::class, 'user_one');
@@ -50,5 +51,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function ConversationReplies()
     {
         return $this->hasMany(ConversationReply::class);
+    }
+
+    public function ConversationLatest()
+    {
+        return $this->hasOne(ConversationReply::class);
     }
 }

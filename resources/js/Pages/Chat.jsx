@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Authenticated from "@/Layouts/Authenticated";
 import { Head } from "@inertiajs/inertia-react";
+import moment from "moment";
+
 const baseUrl = `http://livechat.test/chat/`;
 export default function Dashboard(props) {
+    console.log(props.users);
     const [openMessages, setOpenMessages] = useState(false);
+    const [searchName, setSearchName] = useState("");
+    const [users, setUsers] = useState([]);
     const [user, setUser] = useState({});
     const [conversation, setConversation] = useState({
         id: 0,
@@ -15,6 +20,12 @@ export default function Dashboard(props) {
     });
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
+
+    useEffect(() => {
+        if (searchName.length < 1) {
+            setUsers(props.users);
+        }
+    }, [users]);
 
     const selectUserHandler = async (e) => {
         try {
@@ -79,6 +90,25 @@ export default function Dashboard(props) {
         }
     };
 
+    const handleSearch = async (e) => {
+        setSearchName(e.target.value);
+        try {
+            await axios({
+                url: `${baseUrl}name/${searchName}`,
+                method: "get",
+            })
+                .then((response) => {
+                    let { result } = response.data;
+                    setUsers(result);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <Authenticated auth={props.auth} errors={props.errors}>
             <Head title="Dashboard" />
@@ -126,6 +156,7 @@ export default function Dashboard(props) {
                                             </span>
                                             <input
                                                 type="search"
+                                                onChange={handleSearch}
                                                 className="block w-full py-2 pl-10 bg-gray-100 rounded outline-none"
                                                 name="search"
                                                 placeholder="Search"
@@ -138,7 +169,7 @@ export default function Dashboard(props) {
                                             Chats
                                         </h2>
                                         <li>
-                                            {props.users.map((user, i) => (
+                                            {users.map((user, i) => (
                                                 <a
                                                     onClick={() =>
                                                         selectUserHandler(
@@ -160,11 +191,23 @@ export default function Dashboard(props) {
                                                                 {user.name}
                                                             </span>
                                                             <span className="block ml-2 text-sm text-gray-600">
-                                                                50 minutes
+                                                                {user.conversationlatest ===
+                                                                null
+                                                                    ? ""
+                                                                    : moment(
+                                                                          user
+                                                                              .conversationlatest
+                                                                              .created_at
+                                                                      ).calendar()}
                                                             </span>
                                                         </div>
                                                         <span className="block ml-2 text-sm text-gray-600">
-                                                            Good night
+                                                            {user.conversationlatest ===
+                                                            null
+                                                                ? ""
+                                                                : user
+                                                                      .conversationlatest
+                                                                      .body}
                                                         </span>
                                                     </div>
                                                 </a>
@@ -230,6 +273,11 @@ export default function Dashboard(props) {
                                                                               message.body
                                                                           }
                                                                       </span>
+                                                                      <p className="text-xs text-slate-400">
+                                                                          {moment(
+                                                                              message.created_at
+                                                                          ).calendar()}
+                                                                      </p>
                                                                   </div>
                                                               </li>
                                                           )

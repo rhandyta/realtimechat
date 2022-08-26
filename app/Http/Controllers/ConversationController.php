@@ -8,13 +8,16 @@ use App\Models\ConversationReply;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::where('id', '!=', Auth::user()->id)->get();
+        $users = User::with('conversationlatest')
+            ->where('id', '!=', Auth::user()->id)
+            ->get();
 
         return Inertia::render('Chat', [
             'users' => $users
@@ -84,6 +87,15 @@ class ConversationController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Message has been sent",
+        ]);
+    }
+
+    public function search($name)
+    {
+        $users = User::with('conversationlatest')->where('name', 'like', "%" . $name . "%")->get();
+        return response()->json([
+            'success' => true,
+            'result' => $users,
         ]);
     }
 }
